@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"errors"
+	"fmt"
 	"golang.org/x/sync/semaphore"
 	"io"
 	"os"
@@ -229,6 +230,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 		if err != nil {
 			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
+		fmt.Println("Layer Blob Info:", layerInfo)
 		if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
 			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 		}

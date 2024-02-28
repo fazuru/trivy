@@ -3,6 +3,7 @@ package debian
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 
 	"golang.org/x/xerrors"
@@ -26,6 +27,8 @@ type debianOSAnalyzer struct{}
 
 func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(input.Content)
+	fmt.Println("debian OS Analyzer")
+	fmt.Println("debianOSAnalyzer File Path:", input.FilePath)
 	for scanner.Scan() {
 		line := scanner.Text()
 		return &analyzer.AnalysisResult{
@@ -36,7 +39,10 @@ func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 }
 
 func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
+	fmt.Println("debian OS Analyzer Required file path:", filePath)
+	required := utils.StringInSlice(filePath, requiredFiles)
+	fmt.Println("debian OS Analyzer Required status for file:", filePath)
+	return required
 }
 
 func (a debianOSAnalyzer) Type() analyzer.Type {
