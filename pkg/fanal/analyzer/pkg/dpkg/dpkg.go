@@ -262,6 +262,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 
 func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, fileName := filepath.Split(filePath)
+	fmt.Println("Debian Analyzer required file path:", filePath)
 	if a.isListFile(dir, fileName) || filePath == statusFile || filePath == availableFile {
 		return true
 	}
@@ -269,6 +270,7 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	if dir == statusDir {
 		return true
 	}
+	fmt.Println("Debian Analyzer required got false status for file path:", filePath)
 	return false
 }
 
