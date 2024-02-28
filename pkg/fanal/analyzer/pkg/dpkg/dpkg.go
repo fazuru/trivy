@@ -88,7 +88,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	if err != nil {
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
-
+	fmt.Println("dkpg analyzer package info results:", packageInfos)
 	return &analyzer.AnalysisResult{
 		PackageInfos:         packageInfos,
 		SystemInstalledFiles: systemInstalledFiles,
@@ -135,13 +135,14 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
-
+	fmt.Println("parseDpkgAvailable called")
 	pkgs := map[string]digest.Digest{}
 	scanner := NewScanner(f)
 	for scanner.Scan() {
 		header, err := scanner.Header()
 		if !errors.Is(err, io.EOF) && err != nil {
 			log.Logger.Warnw("Parse error", zap.String("file", availableFile), zap.Error(err))
+			fmt.Println("parseDpkgAvailable parse error")
 			continue
 		}
 		name, version, checksum := header.Get("Package"), header.Get("Version"), header.Get("SHA256")
@@ -163,6 +164,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r dio.ReadSeekerAt, diges
 	pkgs := map[string]*types.Package{}
 	pkgIDs := map[string]string{}
 
+	fmt.Println("parseDpkgStatus called")
 	scanner := NewScanner(r)
 	for scanner.Scan() {
 		header, err := scanner.Header()
@@ -196,10 +198,12 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r dio.ReadSeekerAt, diges
 }
 
 func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
+	fmt.Println("parseDpkgPkg called")
 	if isInstalled := a.parseStatus(header.Get("Status")); !isInstalled {
+		fmt.Println("parseDpkgPkg is not installed")
 		return nil
 	}
-
+	fmt.Println("parseDpkgPkg getting package info")
 	pkg := &types.Package{
 		Name:       header.Get("Package"),
 		Version:    header.Get("Version"),                 // Will be parsed later
@@ -208,6 +212,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 		Arch:       header.Get("Architecture"),
 	}
 	if pkg.Name == "" || pkg.Version == "" {
+		fmt.Println("parseDpkgPkg name and version are nil")
 		return nil
 	}
 
