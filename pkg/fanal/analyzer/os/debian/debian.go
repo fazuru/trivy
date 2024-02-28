@@ -41,7 +41,7 @@ func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fmt.Println("debian OS Analyzer Required file path:", filePath)
 	required := utils.StringInSlice(filePath, requiredFiles)
-	fmt.Println("debian OS Analyzer Required status for file:", filePath)
+	fmt.Println("debian OS Analyzer Required status for file:", required)
 	return required
 }
 
